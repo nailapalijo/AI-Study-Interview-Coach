@@ -43,9 +43,30 @@ DB_PATH = DATA_DIR / "coach.db"
 for _d in (UPLOAD_DIR, MODEL_CACHE_DIR, LOG_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
+
+def _remove_partial_hf_downloads(root: Path) -> None:
+    """Delete stale .incomplete files from interrupted Hugging Face downloads."""
+    if not root.exists():
+        return
+    for item in root.rglob("*.incomplete"):
+        try:
+            item.unlink()
+        except OSError:
+            pass
+    for item in root.rglob("*.tmp"):
+        try:
+            item.unlink()
+        except OSError:
+            pass
+
+
+_remove_partial_hf_downloads(MODEL_CACHE_DIR)
+
 os.environ.setdefault("HF_HOME", str(MODEL_CACHE_DIR))
 os.environ.setdefault("HF_HUB_DOWNLOAD_TIMEOUT", "300")
 os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
+os.environ.setdefault("HF_XET_DISABLED", "1")
 
 # Windows can fail when the fast HF transfer path keeps a temporary file open while the cache
 # is being moved/renamed. Force the standard download path to avoid intermittent file-lock errors.

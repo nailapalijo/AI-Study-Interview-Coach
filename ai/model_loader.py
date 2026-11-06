@@ -103,9 +103,10 @@ class ModelManager:
                     "The 'torch' and 'transformers' packages are not installed. Run: pip install -r requirements.txt"
                 ) from exc
             self.unload()
-            attempts = [self.requested_id]
-            if config.FALLBACK_MODEL_ID not in attempts:
-                attempts.append(config.FALLBACK_MODEL_ID)
+            attempts = []
+            for candidate in (self.requested_id, config.FALLBACK_MODEL_ID):
+                if candidate and candidate not in attempts:
+                    attempts.append(candidate)
             errors = []
             for model_id in attempts:
                 try:
@@ -125,4 +126,4 @@ class ModelManager:
             self.last_error = " | ".join(errors)
             raise ModelLoadError(
                 "Could not load any language model. Check your internet connection (first run downloads the "
-                f"weights), free disk/RAM, or pick a smaller model. Details: {self.last_error}")
+                f"weights), clear stale download cache, or choose the default Qwen 0.5B model. Details: {self.last_error}")

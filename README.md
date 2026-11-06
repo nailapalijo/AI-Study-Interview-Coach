@@ -9,7 +9,7 @@ python_version: "3.11"
 app_file: app.py
 pinned: false
 license: apache-2.0
-short_description: Local-LLM RAG chat, mock interviews, study plans and quizzes
+short_description: Study and interview coaching with local open-source AI
 ---
 
 # 🎓 AI Study & Interview Coach
